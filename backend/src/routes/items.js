@@ -38,6 +38,21 @@ async function writeData(data) {
   }
 }
 
+/**
+ * Formats a given string by removing diacritics (accents), converting it to lowercase,
+ * and normalizing its Unicode representation.
+ *
+ * @function formatString
+ * @param {string} str - String input.
+ * @returns {string} The formatted string, without accents and in lowercase.
+ */
+function formatString(str) {
+  const formattedStr = str.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+  return formattedStr;
+}
+
 // GET /api/items
 router.get('/', async (req, res, next) => {
 
@@ -47,8 +62,12 @@ router.get('/', async (req, res, next) => {
     let results = data;
 
     if (q) {
-      // Simple substring search (sub‑optimal)
-      results = results.filter(item => item.name.toLowerCase().includes(q.toLowerCase()));
+      const query = formatString(q)
+
+      results = results.filter(item => {
+        formatString(item.name).includes(query) ||
+        formatString(item.category).includes(query)
+      });
     }
 
     if (limit) {
