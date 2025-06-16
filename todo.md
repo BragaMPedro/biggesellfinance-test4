@@ -1,6 +1,6 @@
-Instructions
-    (A) Backend (Node.js)
-        Refatorar I/O de bloqueio: Substituir [`fs.readFileSync`](\backend\src\routes\items.js) por operações assíncronas não bloqueantes. @refactor #backend
+Instructions {c}
+    (A) Backend (Node.js) {c}
+        Refatorar I/O de bloqueio: Substituir [`fs.readFileSync`](\backend\src\routes\items.js) por operações assíncronas não bloqueantes. @refactor #backend {cm:2025-06-16}
         Melhorar desempenho do [`/api/stats`](\backend\src\routes\stats.js): Implementar caching, monitoramento de mudanças de arquivo ou estratégia inteligente para evitar recálculo em cada requisição. @refactor #backend
         Adicionar testes unitários (Jest) para as rotas de itens: Incluir testes para casos de sucesso e de erro. @feat #backend
 
@@ -16,9 +16,8 @@ Instructions
         Implementar tratamento de erros robusto e considerar casos de borda. #endgame
         Garantir que todos os testes passem via `npm test` (frontend e backend). #endgame
 
-Recruter Comments {c}
+Recruter Comments
     [Extra logger middleware stub for candidate to enhance. Ln 1](\backend\src\middleware\logger.js) #backend
     [Utility intentionally unused by routes (candidate should refactor) Ln 1](\backend\src\utils\stats.js) #backend
     [Clean‑up to avoid memory leak. Ln 14](\frontend\src\pages\Items.js) #frontend
-
-
+    [Intentional bug: backend ignores limit Ln 9](\frontend\src\state\DataContext.js) #backend
