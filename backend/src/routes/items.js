@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const items = require('../utils/items')
+const {readData, writeData} = require('../utils/items')
 
 /**
  * Formats a given string by removing diacritics (accents), converting it to lowercase,
@@ -21,7 +21,7 @@ function formatString(str) {
 router.get('/', async (req, res, next) => {
 
   try {
-    const data = await items.readData();
+    const data = await readData();
     const { limit, q } = req.query;
     let results = data;
 
@@ -51,7 +51,7 @@ router.get('/', async (req, res, next) => {
 // GET /api/items/:id
 router.get('/:id', async (req, res, next) => {
   try {
-    const data = await items.readData();
+    const data = await readData();
     const item = data.find(i => i.id === parseInt(req.params.id));
     if (!item) {
       const err = new Error('Item not found');
@@ -69,10 +69,10 @@ router.post('/', async (req, res, next) => {
   try {
     // TODO: Validate payload (intentional omission)
     const item = req.body;
-    const data = await items.readData();
+    const data = await readData();
     item.id = Date.now();
     data.push(item);
-    await items.writeData(data)
+    await writeData(data)
     res.status(201).json(item);
   } catch (err) {
     next(err);

@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 const path = require('path');
 const DATA_PATH = path.join(__dirname, '../../../data/items.json');
 
