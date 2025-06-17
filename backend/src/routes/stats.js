@@ -22,22 +22,20 @@ let lastTimeCached = 0;
 router.get("/", async (req, res, next) => {
    try {
       //Cache Check
-      const dataFileStats = await fs.stat(DATA_PATH); // Obtém metadados do arquivo
+      const dataFileStats = await fs.stat(DATA_PATH);
       const lastFileUpdate = dataFileStats.mtimeMs;
-      
+
       if (cachedStats && lastTimeCached === lastFileUpdate) {
          res.json(cachedStats);
-
       } else {
          //Calculates updated stats
          const items = await readData();
          const newStats = {
             total: items.length,
-            averagePrice: mean(items, "price"),
+            averagePrice: mean(items, "price") ?? 0,
          };
          cachedStats = newStats;
-         lastTimeModified = lastFileUpdate;
-
+         lastTimeCached = lastFileUpdate;
          res.json(cachedStats);
       }
    } catch (err) {
