@@ -1,23 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../state/DataContext';
 import { Link } from 'react-router-dom';
 
 function Items() {
-  const { items, fetchItems } = useData();
+  const { items, fetchItems, loading } = useData();
+   const [limit, setLimit] = useState(20);
+   const [q, setQ] = useState('');
 
   useEffect(() => {
     let active = true;
 
-    // Intentional bug: setState called after component unmount if request is slow
-    fetchItems().catch(console.error);
+    active && fetchItems({q, limit}).catch(console.error);
 
-    // Clean‑up to avoid memory leak (candidate should implement)
     return () => {
       active = false;
     };
   }, [fetchItems]);
 
-  if (!items.length) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <ul>

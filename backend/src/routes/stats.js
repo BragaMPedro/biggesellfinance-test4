@@ -1,23 +1,46 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs/promises");
+const express = require("express");
 const router = express.Router();
-const DATA_PATH = path.join(__dirname, '../../data/items.json');
+const path = require("path");
+const DATA_PATH = path.join(__dirname, "../../../data/items.json");
+const { mean } = require("../utils/stats");
+const { readData } = require("../utils/items");
+
+/**
+ * @typedef Stats
+ * @property {number} total - Total items count
+ * @property {number} averagePrice - Items average price
+ */
+
+/**
+ * @type Stats
+ */
+let cachedStats = null;
+let lastTimeCached = 0;
 
 // GET /api/stats
-router.get('/', (req, res, next) => {
-  fs.readFile(DATA_PATH, (err, raw) => {
-    if (err) return next(err);
+router.get("/", async (req, res, next) => {
+   try {
+      //Cache Check
+      const dataFileStats = await fs.stat(DATA_PATH);
+      const lastFileUpdate = dataFileStats.mtimeMs;
 
-    const items = JSON.parse(raw);
-    // Intentional heavy CPU calculation
-    const stats = {
-      total: items.length,
-      averagePrice: items.reduce((acc, cur) => acc + cur.price, 0) / items.length
-    };
-
-    res.json(stats);
-  });
+      if (cachedStats && lastTimeCached === lastFileUpdate) {
+         res.json(cachedStats);
+      } else {
+         //Calculates updated stats
+         const items = await readData();
+         const newStats = {
+            total: items.length,
+            averagePrice: mean(items, "price") ?? 0,
+         };
+         cachedStats = newStats;
+         lastTimeCached = lastFileUpdate;
+         res.json(cachedStats);
+      }
+   } catch (err) {
+      next(err);
+   }
 });
 
 module.exports = router;
